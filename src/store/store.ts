@@ -164,7 +164,9 @@ const useStore = create<Store>()((set) => ({
   }
 }))
 
-useStore.getState().setGame(JSON.parse(window.localStorage.getItem('game') || '{}'))
+if (typeof window !== 'undefined') {
+  useStore.getState().setGame(JSON.parse(window.localStorage.getItem('game') || '{}'))
+}
 
 export const reset = () => {
   if (typeof window !== 'undefined') {
