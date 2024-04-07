@@ -1,0 +1,72 @@
+.console {
+  border: solid green 2px;
+  width: 600px;
+  height: 400px;
+  padding: 10px;
+  overflow: auto;
+  display: flex;
+  flex-direction: column-reverse;
+
+  &:focus {
+    outline: none;
+  }
+
+  &::-webkit-scrollbar {
+    width: 8px;
+    padding: 2px;
+  }
+  &::-webkit-scrollbar-track {
+    background: black;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #005500;
+    border-radius: 2px;
+    margin: 2px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: green;
+  }
+
+  &__message {
+    white-space: pre-wrap;
+    max-width: 52ch;
+  }
+
+  &__location_wrapper {
+    display: inline;
+  }
+
+  &__wrapper {
+    width: 100%;
+  }
+
+  &__cursor_wrapper {
+    position: relative;
+    display: inline;
+    width: 0;
+    height: 0;
+  }
+
+  &__input_row_wrapper {
+    display: inline-flex;
+    flex-direction: row;
+    gap: 10px;
+  }
+
+  &__input {
+    border: none;
+    color: green;
+    font-weight: 400;
+    caret-color: transparent;
+    width: 100%;
+    background-color: transparent;
+
+    &:focus {
+      outline: none;
+    }
+
+    &:hover {
+      cursor: default;
+    }
+  }
+}

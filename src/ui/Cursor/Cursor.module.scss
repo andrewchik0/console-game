@@ -1,0 +1,14 @@
+.cursor {
+  animation: blinker 1s step-start infinite;
+  width: 9.64px;
+  height: 19px;
+  background-color: green;
+  display: inline-block;
+  z-index: 10;
+
+  @keyframes blinker {
+    50% {
+      opacity: 0;
+    }
+  }
+}

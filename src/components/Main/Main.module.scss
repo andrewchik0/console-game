@@ -1,0 +1,16 @@
+.main {
+  padding: 20px;
+
+  &__container {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+}
