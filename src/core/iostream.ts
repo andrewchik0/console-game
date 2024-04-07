@@ -5,7 +5,6 @@ import { wait } from '@utils/utils'
 
 export type Stream = {
   readKey: () => Promise<string>
-  readString: () => Promise<string>
   write: (str: string) => void
   writeLn: (str: string) => void
   writeGradually: (str: string) => Promise<void>
@@ -112,7 +111,6 @@ const stream: Stream = {
     console.stopDemandingInput()
     return char
   },
-  readString: async () => '',
   setLocation: (str) => console.setLocation(str)
 }
 

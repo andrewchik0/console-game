@@ -19,7 +19,11 @@ export type Location = {
 export type Locations = Location[]
 export const locations: Locations = [
   {
-    name: 'shop'
+    name: 'shop',
+    help: [
+      { showingText: "'list <category>' - list items in category" },
+      { showingText: "'categories' - list all categories" }
+    ]
   },
   {
     name: 'farm'
@@ -54,5 +58,11 @@ export const executingPrograms: ExecutingPrograms = [
         showingText: "'space' - mine blockchain"
       }
     ]
+  },
+  {
+    name: 'shop/list'
+  },
+  {
+    name: 'shop/categories'
   }
 ]

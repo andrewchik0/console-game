@@ -91,6 +91,7 @@ const Console = () => {
         console.executingStopped()
         console.setAbortController(new AbortController())
         console.setExecutingProgram('')
+        console.setShowCaret(true)
 
         setInputValue('')
         setInputFocus()

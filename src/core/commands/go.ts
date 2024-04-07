@@ -8,6 +8,7 @@ import stream from '../iostream'
 registerCommand({
   name: ['cd', 'go'],
   location: '',
+  skipLocationChecking: true,
   mainFunc: async (args) => {
     if (args[0] == 'help') {
       await stream.writeGradually('available locations:')

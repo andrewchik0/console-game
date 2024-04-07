@@ -5,11 +5,12 @@ import useStore, { Store } from '@store/store'
 export type Command = {
   name: string | string[]
   location: string
+  skipLocationChecking?: boolean
   mainFunc: (args: string[], { signal }?: { signal?: AbortSignal }) => Promise<number>
 }
 export type Commands = Command[]
 
-const commands = [{ name: '', mainFunc: async () => 0, location: '' }] as Commands
+const commands = [] as Commands
 
 let console = useStore.getState().console
 useStore.subscribe((state: Store) => (console = state.console))
@@ -26,13 +27,20 @@ const handleCommand = async (
   const args = splittedInput
 
   try {
+    if (commandName === '') {
+      executed = true
+    }
+
     for (const command of commands) {
       if (
-        (typeof command.name === 'string' && command.name === commandName) ||
-        (commandName != '' && command.name.indexOf(commandName) != -1)
+        ((Array.isArray(command.name) && command.name.indexOf(commandName) !== -1) ||
+          (typeof command.name == 'string' && command.name === commandName)) &&
+        (command.skipLocationChecking || command.location === console.location)
       ) {
         console.setExecutingProgram(
-          typeof command.name === 'string' ? command.name : command.name[0]
+          command.location +
+            '/' +
+            (typeof command.name === 'string' ? command.name : command.name[0])
         )
         returnValue = await command.mainFunc(args, { signal })
         executed = true

@@ -129,6 +129,46 @@ export const customInput = async (stream: Stream, max = 16) => {
   return message
 }
 
-const spliceString = (origin: string, start: number, delCount: number, newSubStr: string) => {
+export const spliceString = (
+  origin: string,
+  start: number,
+  delCount: number,
+  newSubStr: string
+) => {
   return origin.slice(0, start) + newSubStr + origin.slice(start + Math.abs(delCount))
+}
+
+export const chooseList = async (stream: Stream, list: string[]): Promise<number> => {
+  let index = 0
+  let key = ''
+  let renderedStringLength = 0
+  const helpMsg = '\n↑↓ - select\nenter - submit\nesc - exit'
+
+  stream.hideCaret()
+
+  const renderList = () => {
+    stream.backspace(renderedStringLength)
+    renderedStringLength = 0
+    stream.writeLn('')
+    list.forEach((item, idx) => {
+      if (idx == index) stream.write(` > ${item} <\n`)
+      else stream.write(`   ${item}  \n`)
+      renderedStringLength += item.length + 6
+    })
+    renderedStringLength += helpMsg.length
+    stream.write(helpMsg)
+  }
+
+  renderList()
+
+  while (key !== 'Escape' && key !== 'Enter') {
+    key = await stream.readKey()
+    if (key === 'ArrowUp') index = index === 0 ? (index = list.length - 1) : index - 1
+    if (key === 'ArrowDown') index = (index + 1) % list.length
+    renderList()
+  }
+
+  stream.showCaret()
+  if (key === 'Enter') return index
+  return -1
 }
