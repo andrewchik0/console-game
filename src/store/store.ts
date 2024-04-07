@@ -1,4 +1,3 @@
-'use client'
 import { create } from 'zustand'
 
 export type Point = {
@@ -168,9 +167,11 @@ const useStore = create<Store>()((set) => ({
 useStore.getState().setGame(JSON.parse(window.localStorage.getItem('game') || '{}'))
 
 export const reset = () => {
-  window.localStorage.clear()
-  useStore.getState().setGame(initialState.game as Store['game'])
-  useStore.getState().setConsole(initialState.console as Store['console'])
+  if (typeof window !== 'undefined') {
+    window.localStorage.clear()
+    useStore.getState().setGame(initialState.game as Store['game'])
+    useStore.getState().setConsole(initialState.console as Store['console'])
+  }
 }
 
 export default useStore
