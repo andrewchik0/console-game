@@ -1,5 +1,5 @@
 'use client'
-import React, { CSSProperties, useEffect, useMemo, useRef, useState } from 'react'
+import React, { CSSProperties, useEffect, useState } from 'react'
 
 import styles from './Console.module.scss'
 

@@ -9,7 +9,7 @@ type Props = {
 }
 
 const Cursor = ({ className, style }: Props) => {
-  return <div className={`${styles.className} ${styles.cursor}`} style={style}></div>
+  return <div className={`${styles.className} ${styles.cursor} ${className}`} style={style}></div>
 }
 
 export default Cursor

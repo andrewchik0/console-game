@@ -78,11 +78,7 @@ const stream: Stream = {
     checkInputKey()
 
     const chars = [...str]
-    const caretPos = {
-      x: 0,
-      y: console.caretPos.y - 1
-    }
-    for (const [idx, ch] of chars.entries()) {
+    for (const [idx] of chars.entries()) {
       if (shouldSpeedUp) {
         console.modifyLastMessage(str)
         console.setCaretPos(getCaretPosFromString(str), -1)

@@ -19,12 +19,7 @@ export type Location = {
 export type Locations = Location[]
 export const locations: Locations = [
   {
-    name: 'shop',
-    child: [
-      {
-        name: '123'
-      }
-    ]
+    name: 'shop'
   },
   {
     name: 'farm'

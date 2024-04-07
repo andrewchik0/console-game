@@ -1,14 +1,9 @@
 import { Location, locations } from '@constants/general'
 
-import useStore, { Store } from '@store/store'
-
 import { multiplyString } from '@utils/utils'
 
 import { registerCommand } from '../commands'
 import stream from '../iostream'
-
-let game = useStore.getState().game
-useStore.subscribe((state: Store) => (game = state.game))
 
 registerCommand({
   name: ['cd', 'go'],

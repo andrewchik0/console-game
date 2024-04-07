@@ -6,7 +6,6 @@ import { executingPrograms } from '@constants/general'
 import useStore from '@store/store'
 
 const Help = () => {
-  const game = useStore((store) => store.game)
   const console = useStore((store) => store.console)
 
   const evalHelp = () => {
