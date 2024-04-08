@@ -25,8 +25,10 @@ const Console = () => {
   // Save game on page closure
   useEffect(() => {
     updateStore()
-    return () => {
+    window.addEventListener('beforeunload', () => {
       useStore.getState().game.setCommandAvailability('home', false)
+    })
+    return () => {
       window.localStorage.setItem('game', JSON.stringify(useStore.getState().game))
     }
   })
