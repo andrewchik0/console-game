@@ -35,7 +35,7 @@ const Help = () => {
   const evalHelpPrograms = () => {
     const array: ReactNode[] = []
     for (const [idx, cmd] of getCommandsByLocation(console.location).entries()) {
-      if (isCommandAvailable((cmd.getFullName && cmd.getFullName()) || '')) {
+      if (isCommandAvailable((cmd.getFullName && cmd.getFullName()) || '') && cmd.name !== 'help') {
         array.push(
           <p className={styles.help__unit} key={idx}>
             {renderWithBackground(

@@ -86,7 +86,8 @@ export const initialState: State = {
     commandsAvailability: [
       { name: 'start', value: true },
       { name: 'dev', value: true },
-      { name: 'reset', value: true }
+      { name: 'reset', value: true },
+      { name: 'help', value: true }
     ]
   }
 }

@@ -11,7 +11,7 @@ useStore.subscribe((state: Store) => (game = state.game))
 registerCommand({
   name: 'miner',
   location: '',
-  description: 'start mining manually',
+  description: 'mining manually',
   stats: [
     {
       fieldName: 'amountOfHashPerClick',
