@@ -1,4 +1,5 @@
 export const name = 'The Console Miner'
+export const githubLink = 'https://github.com/andrewchik0/console-game'
 
 export type HelpUnit = {
   showingText: string

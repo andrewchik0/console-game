@@ -1,0 +1,12 @@
+.footer {
+  margin-top: auto;
+  padding: 10px 15px;
+
+  &__link {
+    color: #006600;
+
+    &:hover {
+      color: green;
+    }
+  }
+}

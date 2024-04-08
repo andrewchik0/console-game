@@ -11,7 +11,7 @@ registerCommand({
   description: 'start the journey',
   mainFunc: async () => {
     await renderDialogue(start)
-    useStore.getState().game.setCommandAvailability('go', true)
+    useStore.getState().game.setCommandAvailability('miner', true)
     return 0
   }
 })
