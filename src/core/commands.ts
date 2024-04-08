@@ -65,7 +65,7 @@ const handleCommand = async (
 
 export const registerCommand = (cmd: Command) => {
   const wrapper =
-    (func: (args: string[], { signal }?: { signal: AbortSignal }) => Promise<number>) =>
+    (func: (args: string[], { signal }?: { signal?: AbortSignal }) => Promise<number>) =>
     async (args: string[], { signal }: { signal?: AbortSignal } = {}) => {
       return new Promise<number>((resolve, reject) => {
         const abortHandler = () => {
