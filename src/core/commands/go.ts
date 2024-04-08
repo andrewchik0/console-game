@@ -1,14 +1,17 @@
 import { Location, locations } from '@constants/general'
 
+import useStore from '@store/store'
+
 import { multiplyString } from '@utils/utils'
 
 import { registerCommand } from '../commands'
 import stream from '../iostream'
 
 registerCommand({
-  name: ['cd', 'go'],
+  name: ['go', 'cd'],
   location: '',
   skipLocationChecking: true,
+  description: 'go to certain location',
   mainFunc: async (args) => {
     if (args[0] == 'help') {
       await stream.writeGradually('available locations:')
@@ -44,6 +47,7 @@ registerCommand({
 
     if (found(locations, path)) {
       stream.setLocation(args[0])
+      useStore.getState().game.setCommandAvailability('home', true)
     } else {
       await stream.writeGradually(`no such location: ${args[0]}`)
       await stream.writeGradually(`to list all available locations use 'go help'`)

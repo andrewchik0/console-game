@@ -6,6 +6,7 @@ export type Point = {
 }
 
 export type State = {
+  isDev: boolean
   console: {
     messages: string[]
     isExecuting: boolean
@@ -24,10 +25,12 @@ export type State = {
     amountOfHashPerClick: number
     decryptingSpeed: number
     moneyPerBlock: number
+    commandsAvailability: { name: string; value: boolean }[]
   }
 }
 
 type Action = {
+  setIsDev: (value: boolean) => void
   setConsole: (game: Action['console']) => void
   console: {
     pushMessage: (str: string) => void
@@ -54,12 +57,14 @@ type Action = {
     increaseAmountOfHashPerClick: (amount: number) => void
     increaseDecryptingSpeed: (amount: number) => void
     increaseMoneyPerBlock: (amount: number) => void
+    setCommandAvailability: (name: string, value: boolean) => void
   }
 }
 
 export type Store = State & Action
 
 export const initialState: State = {
+  isDev: false,
   console: {
     messages: [],
     caretPos: { x: 3, y: 0 },
@@ -77,11 +82,18 @@ export const initialState: State = {
     internetSpeed: 1,
     amountOfHashPerClick: 1,
     decryptingSpeed: 1,
-    moneyPerBlock: 1
+    moneyPerBlock: 1,
+    commandsAvailability: [
+      { name: 'start', value: true },
+      { name: 'dev', value: true },
+      { name: 'reset', value: true }
+    ]
   }
 }
 
 const useStore = create<Store>()((set) => ({
+  isDev: initialState.isDev,
+  setIsDev: (value) => set(() => ({ isDev: value })),
   setConsole: (console) => set((state) => ({ console: { ...state.console, ...console } })),
   console: {
     ...initialState.console,
@@ -160,12 +172,31 @@ const useStore = create<Store>()((set) => ({
     increaseMoneyPerBlock: (amount) =>
       set((state) => ({
         game: { ...state.game, moneyPerBlock: state.game.moneyPerBlock + amount }
-      }))
+      })),
+
+    setCommandAvailability: (name, value) =>
+      set((state) => {
+        for (const [idx, cmd] of state.game.commandsAvailability.entries()) {
+          if (cmd.name == name) {
+            const newArray = [...state.game.commandsAvailability]
+            newArray[idx].value = value
+            return { game: { ...state.game, commandAvailability: newArray } }
+          }
+        }
+        return {
+          game: {
+            ...state.game,
+            commandsAvailability: [...state.game.commandsAvailability, { name: name, value: value }]
+          }
+        }
+      })
   }
 }))
 
-if (typeof window !== 'undefined') {
-  useStore.getState().setGame(JSON.parse(window.localStorage.getItem('game') || '{}'))
+export const updateStore = () => {
+  if (typeof window !== 'undefined') {
+    useStore.getState().setGame(JSON.parse(window.localStorage.getItem('game') || '{}'))
+  }
 }
 
 export const reset = () => {

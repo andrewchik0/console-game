@@ -1,3 +1,5 @@
+import { HelpUnit, StatUnit } from '@constants/general'
+
 import stream from '@core/iostream'
 
 import useStore, { Store } from '@store/store'
@@ -6,7 +8,11 @@ export type Command = {
   name: string | string[]
   location: string
   skipLocationChecking?: boolean
+  description: string
+  help?: HelpUnit[]
+  stats?: StatUnit[]
   mainFunc: (args: string[], { signal }?: { signal?: AbortSignal }) => Promise<number>
+  getFullName?: () => string
 }
 export type Commands = Command[]
 
@@ -14,6 +20,8 @@ const commands = [] as Commands
 
 let console = useStore.getState().console
 useStore.subscribe((state: Store) => (console = state.console))
+let game = useStore.getState().game
+useStore.subscribe((state: Store) => (game = state.game))
 
 const handleCommand = async (
   input: string,
@@ -35,13 +43,10 @@ const handleCommand = async (
       if (
         ((Array.isArray(command.name) && command.name.indexOf(commandName) !== -1) ||
           (typeof command.name == 'string' && command.name === commandName)) &&
-        (command.skipLocationChecking || command.location === console.location)
+        (command.skipLocationChecking || command.location === console.location) &&
+        isCommandAvailable((command.getFullName && command.getFullName()) || '')
       ) {
-        console.setExecutingProgram(
-          command.location +
-            '/' +
-            (typeof command.name === 'string' ? command.name : command.name[0])
-        )
+        console.setExecutingProgram((command.getFullName && command.getFullName()) || '')
         returnValue = await command.mainFunc(args, { signal })
         executed = true
       }
@@ -74,9 +79,37 @@ export const registerCommand = (cmd: Command) => {
         signal?.addEventListener('abort', abortHandler)
       })
     }
-
+  cmd.getFullName = () => {
+    const name = typeof cmd.name === 'string' ? cmd.name : cmd.name[0]
+    if (cmd.location === '') return name
+    return cmd.location + '/' + name
+  }
   cmd.mainFunc = wrapper(cmd.mainFunc)
   commands.push(cmd)
+}
+
+export const isCommandAvailable = (name: string) => {
+  if (useStore.getState().isDev) return true
+  for (const cmd of game.commandsAvailability) {
+    if (name === cmd.name) {
+      return cmd.value
+    }
+  }
+  return false
+}
+
+export const getCommandsByLocation = (loc: string) => {
+  const result: Commands = []
+  for (const cmd of commands) {
+    if (cmd.location === loc || cmd.skipLocationChecking) result.push(cmd)
+  }
+  return result
+}
+
+export const getCurrentProgram = () => {
+  for (const cmd of commands) {
+    if (cmd.getFullName && cmd.getFullName() === console.executingProgram) return cmd
+  }
 }
 
 export default handleCommand

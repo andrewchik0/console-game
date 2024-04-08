@@ -1,53 +1,66 @@
 'use client'
-import React from 'react'
+import React, { CSSProperties, ReactNode } from 'react'
 
-import { executingPrograms, locations } from '@constants/general'
+import styles from './Help.module.scss'
+
+import { getCommandsByLocation, getCurrentProgram, isCommandAvailable } from '@core/commands'
 
 import useStore from '@store/store'
 
+import { renderWithBackground } from '@utils/uiUtils'
+
 const Help = () => {
   const console = useStore((store) => store.console)
+  useStore((store) => store.game.commandsAvailability)
 
-  const evalHelpExecution = () => {
-    for (const execProgram of executingPrograms) {
-      if (console.executingProgram === execProgram.name && execProgram.help) {
-        return execProgram.help.map((help, idx) => {
-          if ((help.condition && eval(help.condition) === true) || !help.condition) {
-            return <p key={idx}>{help.showingText}</p>
-          }
-          return ''
-        })
-      }
-    }
+  const commandSpanStyle: CSSProperties = {
+    backgroundColor: '#161616',
+    borderRadius: '4px',
+    padding: '1px 4px 2px'
   }
 
-  const evalHelpLocations = () => {
-    for (const location of locations) {
-      if (console.location === location.name && location.help) {
-        return location.help.map((help, idx) => {
-          if ((help.condition && eval(help.condition) === true) || !help.condition) {
-            return <p key={idx}>{help.showingText}</p>
-          }
-          return ''
-        })
+  const evalHelpExecution = () => {
+    return getCurrentProgram()?.help?.map((help, idx) => {
+      if ((help.condition && eval(help.condition) === true) || !help.condition) {
+        return (
+          <p className={styles.help__unit} key={idx}>
+            {renderWithBackground(help.showingText, commandSpanStyle)}
+          </p>
+        )
+      }
+      return ''
+    })
+  }
+
+  const evalHelpPrograms = () => {
+    const array: ReactNode[] = []
+    for (const [idx, cmd] of getCommandsByLocation(console.location).entries()) {
+      if (isCommandAvailable((cmd.getFullName && cmd.getFullName()) || '')) {
+        array.push(
+          <p className={styles.help__unit} key={idx}>
+            {renderWithBackground(
+              `'${typeof cmd.name === 'string' ? cmd.name : cmd.name[0]}' - ${cmd.description}`,
+              commandSpanStyle
+            )}
+          </p>
+        )
       }
     }
+    return array
   }
 
   return (
     <div>
-      <h3>Help</h3>
+      <h3>controls</h3>
       {console.isExecuting ? (
         <>
-          <p>'ctrl + c' - terminate program</p>
+          <p className={styles.help__unit}>
+            <span style={commandSpanStyle}>ctrl + c</span> - terminate program
+          </p>
           {evalHelpExecution()}
         </>
       ) : (
-        <>
-          <p>'go {'<location>'}' - go to a location</p>
-          {console.location !== '' && <p>'home' - go back</p>}
-          {evalHelpLocations()}
-        </>
+        <>{evalHelpPrograms()}</>
       )}
     </div>
   )

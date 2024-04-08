@@ -5,7 +5,7 @@ import styles from './Console.module.scss'
 
 import handleCommand from '@core/commands'
 
-import useStore from '@store/store'
+import useStore, { updateStore } from '@store/store'
 
 import useFocus from '@hooks/useFocus'
 
@@ -24,7 +24,11 @@ const Console = () => {
 
   // Save game on page closure
   useEffect(() => {
-    return () => window.localStorage.setItem('game', JSON.stringify(useStore.getState().game))
+    updateStore()
+    return () => {
+      useStore.getState().game.setCommandAvailability('home', false)
+      window.localStorage.setItem('game', JSON.stringify(useStore.getState().game))
+    }
   })
 
   // Handle pressing keys

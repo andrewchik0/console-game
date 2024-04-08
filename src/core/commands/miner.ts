@@ -11,6 +11,23 @@ useStore.subscribe((state: Store) => (game = state.game))
 registerCommand({
   name: 'miner',
   location: '',
+  description: 'start mining manually',
+  stats: [
+    {
+      fieldName: 'amountOfHashPerClick',
+      showingText: 'blocks/click',
+      condition: 'console.amountOfHashPerClick > 1'
+    },
+    {
+      fieldName: 'decryptingSpeed',
+      showingText: 'decrypting speed'
+    }
+  ],
+  help: [
+    {
+      showingText: "'space' - mine blockchain"
+    }
+  ],
   mainFunc: async () => {
     await stream.writeGradually('press or hold space to start')
     stream.writeLn('\n')
