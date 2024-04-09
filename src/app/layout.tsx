@@ -1,6 +1,7 @@
 import React from 'react'
 import type { Metadata, Viewport } from 'next'
 import { Roboto_Mono } from 'next/font/google'
+import { Analytics } from '@vercel/analytics/react'
 
 import './globals.css'
 
@@ -40,6 +41,7 @@ export default function RootLayout({
         }}
       >
         {children}
+        <Analytics />
       </body>
     </html>
   )
