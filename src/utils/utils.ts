@@ -18,6 +18,10 @@ export const wait = (seconds: number) => {
   })
 }
 
+export const clamp = (num: number, min: number, max: number) => {
+  return num <= min ? min : num >= max ? max : num
+}
+
 export const randomHex = (size = 1) => {
   const hex = '0123456789abcdef'
   let output = ''
