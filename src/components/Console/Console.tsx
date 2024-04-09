@@ -131,7 +131,7 @@ const Console = () => {
               className={styles.console__input}
               spellCheck='false'
               autoFocus
-              maxLength={42}
+              maxLength={50}
               onKeyUp={moveCaret}
               onKeyDown={submit}
               ref={inputRef}

@@ -24,7 +24,7 @@ const getCaretPosFromString = (str: string) => {
   let length = 0
   for (const ch of [...str]) {
     length++
-    if (ch === '\n' || length >= 52) {
+    if (ch === '\n' || length >= 64) {
       length = 0
     }
   }
