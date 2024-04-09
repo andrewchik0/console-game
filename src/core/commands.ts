@@ -2,7 +2,7 @@ import { HelpUnit, StatUnit } from '@constants/general'
 
 import stream from '@core/iostream'
 
-import useStore, { Store } from '@store/store'
+import useStore, { LocationAvailability, Store } from '@store/store'
 
 export type Command = {
   name: string | string[]
@@ -96,6 +96,24 @@ export const isCommandAvailable = (name: string) => {
     }
   }
   return false
+}
+
+export const isLocationAvailable = (name: string) => {
+  if (useStore.getState().isDev) return true
+
+  const checkAvailability = (loc: LocationAvailability, path: string[]): boolean => {
+    if (!loc.child) return false
+    for (const l of loc.child) {
+      if (path[0] === l.name) {
+        if (path.length === 1) return l.value
+        path.shift()
+        return checkAvailability(l, path)
+      }
+    }
+    return false
+  }
+
+  return checkAvailability(game.locationsAvailability, name.split('/'))
 }
 
 export const getCommandsByLocation = (loc: string) => {

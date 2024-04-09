@@ -4,7 +4,7 @@ import useStore from '@store/store'
 
 import { multiplyString } from '@utils/utils'
 
-import { registerCommand } from '../commands'
+import { isLocationAvailable, registerCommand } from '../commands'
 import stream from '../iostream'
 
 registerCommand({
@@ -13,16 +13,24 @@ registerCommand({
   skipLocationChecking: true,
   description: 'go to certain location',
   mainFunc: async (args) => {
-    if (args[0] == 'help') {
+    if (args.length < 1 || args[0] == 'help') {
       await stream.writeGradually('available locations:')
 
       stream.writeLn(' .')
+      let locName = ''
       const printLocationsRec = (locs: Location[], deepLvl = 1) => {
         locs.forEach((loc) => {
-          stream.writeLn(multiplyString(' |', deepLvl) + multiplyString('_', 2) + loc.name)
-          if (loc.child) {
-            printLocationsRec(loc.child, deepLvl + 1)
+          locName += loc.name
+
+          if (isLocationAvailable(locName)) {
+            stream.writeLn(multiplyString(' |', deepLvl) + multiplyString('_', 2) + loc.name)
+            if (loc.child) {
+              locName += '/'
+              printLocationsRec(loc.child, deepLvl + 1)
+              locName = locName.substring(0, locName.length - 1)
+            }
           }
+          locName = locName.substring(0, locName.length - loc.name.length)
         })
       }
       printLocationsRec(locations)
@@ -45,7 +53,7 @@ registerCommand({
       return flag
     }
 
-    if (found(locations, path)) {
+    if (found(locations, path) && isLocationAvailable(args[0])) {
       stream.setLocation(args[0])
       useStore.getState().game.setCommandAvailability('home', true)
     } else {

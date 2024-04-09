@@ -5,7 +5,14 @@ export type Point = {
   y: number
 }
 
+export type LocationAvailability = {
+  name: string
+  value: boolean
+  child?: LocationAvailability[]
+}
+
 export type State = {
+  guides: string[]
   isDev: boolean
   console: {
     messages: string[]
@@ -26,10 +33,12 @@ export type State = {
     decryptingSpeed: number
     moneyPerBlock: number
     commandsAvailability: { name: string; value: boolean }[]
+    locationsAvailability: LocationAvailability
   }
 }
 
 type Action = {
+  pushGuide: (str: string) => void
   setIsDev: (value: boolean) => void
   setConsole: (game: Action['console']) => void
   console: {
@@ -58,12 +67,14 @@ type Action = {
     increaseDecryptingSpeed: (amount: number) => void
     increaseMoneyPerBlock: (amount: number) => void
     setCommandAvailability: (name: string, value: boolean) => void
+    setLocationsAvailability: (name: string, value: boolean) => void
   }
 }
 
 export type Store = State & Action
 
 export const initialState: State = {
+  guides: ['press enter to start', 'congratulations'],
   isDev: false,
   console: {
     messages: [],
@@ -87,13 +98,19 @@ export const initialState: State = {
       { name: 'start', value: true },
       { name: 'dev', value: true },
       { name: 'reset', value: true },
-      { name: 'help', value: true }
-    ]
+      { name: 'help', value: true },
+      { name: 'set', value: true }
+    ],
+    locationsAvailability: {
+      name: '',
+      value: true
+    }
   }
 }
 
 const useStore = create<Store>()((set) => ({
-  isDev: initialState.isDev,
+  ...initialState,
+  pushGuide: (str) => set((state) => ({ guides: [...state.guides], str })),
   setIsDev: (value) => set(() => ({ isDev: value })),
   setConsole: (console) => set((state) => ({ console: { ...state.console, ...console } })),
   console: {
@@ -190,6 +207,44 @@ const useStore = create<Store>()((set) => ({
             commandsAvailability: [...state.game.commandsAvailability, { name: name, value: value }]
           }
         }
+      }),
+
+    setLocationsAvailability: (name, value) =>
+      set((state) => {
+        const newState = { ...state }
+        if (name[0] !== '/') name = '/' + name
+        const path = name.split('/')
+
+        path.shift()
+
+        const setLocation = (loc: LocationAvailability, value: boolean, path: string[]) => {
+          // Set value if it is last subpath
+          if (path.length === 0) {
+            loc.value = value
+            return
+          }
+
+          let found = false
+          loc.child && (found = loc.child.find((l) => path[0] === l.name) !== undefined)
+
+          // Push new element if there is no such element
+          if (!found) {
+            loc.child = [
+              ...(loc.child || []),
+              {
+                name: path[0],
+                value: false
+              }
+            ]
+          }
+
+          let newLoc
+          loc.child && (newLoc = loc.child.find((l) => path[0] === l.name))
+          path.shift()
+          newLoc && setLocation(newLoc, value, path)
+        }
+        setLocation(newState.game.locationsAvailability, value, path)
+        return { ...newState }
       })
   }
 }))

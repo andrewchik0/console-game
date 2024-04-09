@@ -50,6 +50,7 @@ registerCommand({
         length = 0
         game.increaseMoney(game.moneyPerBlock)
         useStore.getState().game.setCommandAvailability('go', true)
+        useStore.getState().game.setLocationsAvailability('shop', true)
         stream.writeLn('')
         await renderLoading(
           stream,
