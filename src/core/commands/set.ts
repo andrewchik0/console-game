@@ -1,7 +1,6 @@
 import useStore from '@store/store'
 
 import { registerCommand } from '../commands'
-import stream from '../iostream'
 
 const env = process.env.NODE_ENV
 if (env == 'development') {
