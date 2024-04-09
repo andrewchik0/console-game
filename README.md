@@ -1,3 +1,7 @@
+# Console miner
+
+https://console-miner.vercel.app/
+
 ## Getting Started
 
 ```bash
