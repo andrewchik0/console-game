@@ -142,24 +142,28 @@ export const spliceString = (
   return origin.slice(0, start) + newSubStr + origin.slice(start + Math.abs(delCount))
 }
 
-export const chooseList = async (stream: Stream, list: string[]): Promise<number> => {
-  let index = 0
+export let lastRenderedListLength = 0
+export const chooseList = async (
+  stream: Stream,
+  list: string[],
+  initialIndex: number = 0
+): Promise<number> => {
+  let index = initialIndex
   let key = ''
-  let renderedStringLength = 0
   const helpMsg = '\n↑↓ - select\nenter - submit\nesc - exit'
 
   stream.hideCaret()
 
   const renderList = () => {
-    stream.backspace(renderedStringLength)
-    renderedStringLength = 0
+    stream.backspace(lastRenderedListLength)
+    lastRenderedListLength = 0
     stream.writeLn('')
     list.forEach((item, idx) => {
       if (idx == index) stream.write(` > ${item} <\n`)
       else stream.write(`   ${item}  \n`)
-      renderedStringLength += item.length + 6
+      lastRenderedListLength += item.length + 6
     })
-    renderedStringLength += helpMsg.length
+    lastRenderedListLength += helpMsg.length
     stream.write(helpMsg)
   }
 
@@ -175,4 +179,8 @@ export const chooseList = async (stream: Stream, list: string[]): Promise<number
   stream.showCaret()
   if (key === 'Enter') return index
   return -1
+}
+
+export const getObjectKey = (obj: object, key: string) => {
+  return obj[key as keyof typeof obj]
 }

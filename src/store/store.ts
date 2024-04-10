@@ -34,6 +34,7 @@ export type State = {
     moneyPerBlock: number
     commandsAvailability: { name: string; value: boolean }[]
     locationsAvailability: LocationAvailability
+    progressTracker: Record<string, boolean>
   }
 }
 
@@ -66,15 +67,16 @@ type Action = {
     increaseAmountOfHashPerClick: (amount: number) => void
     increaseDecryptingSpeed: (amount: number) => void
     increaseMoneyPerBlock: (amount: number) => void
-    setCommandAvailability: (name: string, value: boolean) => void
-    setLocationsAvailability: (name: string, value: boolean) => void
+    setCommandAvailability: (name: string, value?: boolean) => void
+    setLocationsAvailability: (name: string, value?: boolean) => void
+    addKeyToProgress: (key: string, value?: boolean) => void
   }
 }
 
 export type Store = State & Action
 
 export const initialState: State = {
-  guides: ['press enter to start', 'congratulations'],
+  guides: [],
   isDev: false,
   console: {
     messages: [],
@@ -104,13 +106,14 @@ export const initialState: State = {
     locationsAvailability: {
       name: '',
       value: true
-    }
+    },
+    progressTracker: {}
   }
 }
 
 const useStore = create<Store>()((set) => ({
   ...initialState,
-  pushGuide: (str) => set((state) => ({ guides: [...state.guides], str })),
+  pushGuide: (str) => set((state) => ({ guides: [...state.guides, str] })),
   setIsDev: (value) => set(() => ({ isDev: value })),
   setConsole: (console) => set((state) => ({ console: { ...state.console, ...console } })),
   console: {
@@ -192,7 +195,7 @@ const useStore = create<Store>()((set) => ({
         game: { ...state.game, moneyPerBlock: state.game.moneyPerBlock + amount }
       })),
 
-    setCommandAvailability: (name, value) =>
+    setCommandAvailability: (name, value = true) =>
       set((state) => {
         for (const [idx, cmd] of state.game.commandsAvailability.entries()) {
           if (cmd.name == name) {
@@ -209,7 +212,7 @@ const useStore = create<Store>()((set) => ({
         }
       }),
 
-    setLocationsAvailability: (name, value) =>
+    setLocationsAvailability: (name, value = true) =>
       set((state) => {
         const newState = { ...state }
         if (name[0] !== '/') name = '/' + name
@@ -238,12 +241,18 @@ const useStore = create<Store>()((set) => ({
             ]
           }
 
-          let newLoc
+          let newLoc: LocationAvailability | undefined
           loc.child && (newLoc = loc.child.find((l) => path[0] === l.name))
           path.shift()
           newLoc && setLocation(newLoc, value, path)
         }
         setLocation(newState.game.locationsAvailability, value, path)
+        return { ...newState }
+      }),
+    addKeyToProgress: (key, value = true) =>
+      set((state) => {
+        const newState = { ...state }
+        newState.game.progressTracker[key] = value
         return { ...newState }
       })
   }

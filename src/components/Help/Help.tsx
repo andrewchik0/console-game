@@ -39,7 +39,7 @@ const Help = () => {
         array.push(
           <p className={styles.help__unit} key={idx}>
             {renderWithBackground(
-              `'${typeof cmd.name === 'string' ? cmd.name : cmd.name[0]}' - ${cmd.description}`,
+              `'${cmd.showingName || (typeof cmd.name === 'string' ? cmd.name : cmd.name[0])}' - ${cmd.description}`,
               commandSpanStyle
             )}
           </p>

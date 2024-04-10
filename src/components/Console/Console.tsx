@@ -4,6 +4,7 @@ import React, { CSSProperties, useEffect, useState } from 'react'
 import styles from './Console.module.scss'
 
 import handleCommand from '@core/commands'
+import { getTrackedProgress, popTip, showTip } from '@core/tips'
 
 import useStore, { updateStore } from '@store/store'
 
@@ -25,10 +26,16 @@ const Console = () => {
   // Save game on page closure
   useEffect(() => {
     updateStore()
+    if (!getTrackedProgress('start')) {
+      showTip('start')
+    }
     window.addEventListener('beforeunload', () => {
       useStore.getState().game.setCommandAvailability('home', false)
     })
     return () => {
+      if (!getTrackedProgress('start')) {
+        popTip()
+      }
       window.localStorage.setItem('game', JSON.stringify(useStore.getState().game))
     }
   })

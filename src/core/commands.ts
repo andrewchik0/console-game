@@ -13,6 +13,8 @@ export type Command = {
   stats?: StatUnit[]
   mainFunc: (args: string[], { signal }?: { signal?: AbortSignal }) => Promise<number>
   getFullName?: () => string
+  onExit?: () => void
+  showingName?: string
 }
 export type Commands = Command[]
 
@@ -33,6 +35,7 @@ const handleCommand = async (
   const splittedInput = input.split(' ').filter((el) => el.length > 0)
   const commandName = splittedInput.shift() || ''
   const args = splittedInput
+  let onExit: (() => void) | undefined
 
   try {
     if (commandName === '') {
@@ -46,6 +49,7 @@ const handleCommand = async (
         (command.skipLocationChecking || command.location === console.location) &&
         isCommandAvailable((command.getFullName && command.getFullName()) || '')
       ) {
+        onExit = command.onExit
         console.setExecutingProgram((command.getFullName && command.getFullName()) || '')
         returnValue = await command.mainFunc(args, { signal })
         executed = true
@@ -57,6 +61,8 @@ const handleCommand = async (
     }
   } catch (e) {
     if ((e as Error).name !== 'AbortError') throw e
+  } finally {
+    onExit && onExit()
   }
   return new Promise<number>((resolve) => {
     resolve(returnValue)

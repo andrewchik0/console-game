@@ -1,3 +1,5 @@
+import { getTrackedProgress, showTip, trackProgress } from '@core/tips'
+
 import useStore, { Store } from '@store/store'
 
 import { renderLoading, renderUnknownHex } from '@utils/utils'
@@ -16,7 +18,7 @@ registerCommand({
     {
       fieldName: 'amountOfHashPerClick',
       showingText: 'blocks/click',
-      condition: 'console.amountOfHashPerClick > 1'
+      condition: 'game.amountOfHashPerClick > 1'
     },
     {
       fieldName: 'decryptingSpeed',
@@ -28,9 +30,15 @@ registerCommand({
       showingText: "'space' - mine blockchain"
     }
   ],
+  onExit: () => {
+    if (!getTrackedProgress('going_shop_guide')) {
+      showTip('going_shop_guide')
+      trackProgress('going_shop_guide')
+    }
+  },
   mainFunc: async () => {
-    await stream.writeGradually('press or hold space to start')
-    stream.writeLn('\n')
+    stream.writeGradually('\n')
+    showTip('miner_controls')
     let length = 0
 
     while (true) {
@@ -42,15 +50,22 @@ registerCommand({
       await renderUnknownHex(
         stream,
         1 / Math.pow(game.decryptingSpeed, 0.35),
-        game.amountOfHashPerClick
+        useStore.getState().isDev ? 16 : game.amountOfHashPerClick
       )
-      length += game.amountOfHashPerClick
+      length += useStore.getState().isDev ? 16 : game.amountOfHashPerClick
 
       if (length >= 16) {
         length = 0
         game.increaseMoney(game.moneyPerBlock)
-        useStore.getState().game.setCommandAvailability('go', true)
-        useStore.getState().game.setLocationsAvailability('shop', true)
+
+        useStore.getState().game.setCommandAvailability('go')
+        useStore.getState().game.setLocationsAvailability('shop')
+        useStore.getState().game.setCommandAvailability('shop/list')
+        if (!getTrackedProgress('miner_start')) {
+          showTip('miner_first')
+          trackProgress('miner_start')
+        }
+
         stream.writeLn('')
         await renderLoading(
           stream,

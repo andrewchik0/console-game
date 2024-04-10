@@ -7,18 +7,19 @@ import { getCurrentProgram } from '@core/commands'
 
 import useStore from '@store/store'
 
+import { getObjectKey } from '@utils/utils'
+
 const Stats = () => {
   const game = useStore((store) => store.game)
   const console = useStore((store) => store.console)
 
   const renderStats = (stats: StatUnit[]) => {
     return stats.map((stat, idx) => {
-      const key = stat.fieldName as keyof typeof game
       if ((stat.condition && eval(stat.condition) === true) || !stat.condition) {
         return (
           <p key={idx}>
             <>
-              {stat.showingText}: {game[key]}
+              {stat.showingText}: {getObjectKey(game, stat.fieldName)}
             </>
           </p>
         )
@@ -38,11 +39,10 @@ const Stats = () => {
   const evalStatsExecution = () => {
     return getCurrentProgram()?.stats?.map((stat, idx) => {
       if ((stat.condition && eval(stat.condition) === true) || !stat.condition) {
-        const key = stat.fieldName as keyof typeof game
         return (
           <p key={idx}>
             <>
-              {stat.showingText}: {game[key]}
+              {stat.showingText}: {getObjectKey(game, stat.fieldName)}
             </>
           </p>
         )
