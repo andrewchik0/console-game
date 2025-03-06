@@ -1,6 +1,6 @@
 # Console miner
 
-https://console-miner.vercel.app/
+[https://console-miner-git-main-andrewchik0s-projects.vercel.app/](https://console-miner-git-main-andrewchik0s-projects.vercel.app/)
 
 ## Getting Started
 
